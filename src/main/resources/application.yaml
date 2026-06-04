@@ -1,3 +1,19 @@
 spring:
   application:
     name: blogPlatform
+  data:
+    mongodb:
+      auto-index-creation: true
+      uri: ${MONGODB_URI}
+      database: blogPlatform
+#  datasource:
+#    url: ${DB_URL}
+#    username: ${DB_USERNAME}
+#    password: ${DB_PASSWORD}
+
+
+server:
+  port: ${PORT}
+
+jwt:
+  secret: ${JWT_SECRET}
