@@ -18,9 +18,10 @@ public class User {
     @Indexed(unique = true)
     private String userName;
     @NonNull
+    @Indexed(unique = true)
     private String email;
     @NonNull
     private String password;
     @NonNull
-    private Role role;
+    private Role role = Role.USER;
 }

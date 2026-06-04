@@ -17,10 +17,10 @@ public class Post {
     @Id
     private String id;
     @NonNull
-    private String userId;
+    private String userName;
     private String imageUrl;
     private String caption;
-    private String likeCount;
+    private int likeCount = 0;
     @CreatedDate
     private LocalDateTime createdAt;
 }
