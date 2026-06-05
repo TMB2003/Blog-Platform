@@ -4,19 +4,18 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
+@Table(name = "likes", uniqueConstraints = @UniqueConstraint(
+        columnNames = {"postId", "userName"}
+))
 @Data
-@Table(name = "follows", uniqueConstraints = @UniqueConstraint(
-        columnNames = {"followerUserName", "followingUserName"}
-        ))
-public class Follow {
-
+public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String followerUserName;
+    private String postId;
 
     @Column(nullable = false)
-    private String followingUserName;
+    private String userName;
 }

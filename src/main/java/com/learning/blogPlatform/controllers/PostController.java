@@ -10,6 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/post")
@@ -33,13 +35,13 @@ public class PostController {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Post> getPost(@PathVariable String id){
+    @GetMapping("/{postId}")
+    public ResponseEntity<Post> getPost(@PathVariable String postId){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
 
         try{
-            Post post = postService.getPost(userName, id);
+            Post post = postService.getPost(userName, postId);
             return new ResponseEntity<>(post, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Post not found: ", e);
@@ -47,13 +49,13 @@ public class PostController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable String id, @RequestBody Post newPost){
+    @PutMapping("/{postId}")
+    public ResponseEntity<Post> updatePost(@PathVariable String postId, @RequestBody Post newPost){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
 
         try{
-            Post post = postService.updatePost(userName, id, newPost);
+            Post post = postService.updatePost(userName, postId, newPost);
             return new ResponseEntity<>(post, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error in updating Post: ", e);
@@ -61,17 +63,43 @@ public class PostController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable String id){
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<?> deletePost(@PathVariable String postId){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
 
         try{
-            postService.deletePost(userName, id);
+            postService.deletePost(userName, postId);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error in deleteing post: ", e);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/{postId}/likes")
+    public ResponseEntity<List<String>> likedByUsers(@PathVariable String postId){
+        try{
+            List<String> list = postService.likedByUsers(postId);
+            return new ResponseEntity<>(list, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error in getting Likes: ", e);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<String> likePost(@PathVariable String postId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+
+        try{
+            boolean liked = postService.likePost(userName, postId);
+            if(liked) return new ResponseEntity<>("Liked the Post", HttpStatus.CREATED);
+            return new ResponseEntity<>("DisLiked the Post", HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error in Liking Post: ", e);
+            return new ResponseEntity<>("Error in liking the Post", HttpStatus.NOT_FOUND);
         }
     }
 }
