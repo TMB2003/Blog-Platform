@@ -10,6 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/user")
@@ -42,6 +44,50 @@ public class UserController {
         } catch (Exception e) {
             log.error("Error in deleting User: ", e);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/followers")
+    public ResponseEntity<List<String>> getFollowers(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+
+        try{
+            List<String> list = userService.getFollowers(userName);
+            return new ResponseEntity<>(list, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Followers Not Found: ", e);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/followings")
+    public ResponseEntity<List<String>> getFollowing(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+
+        try{
+            List<String> list = userService.getFollowings(userName);
+            return new ResponseEntity<>(list, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Following Not Found: ", e);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping("/follow/{followingUserName}")
+    public ResponseEntity<String> followUser(@PathVariable String followingUserName){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String followerUserName = authentication.getName();
+
+        try{
+            boolean result = userService.followUser(followerUserName, followingUserName);
+
+            if (result) return new ResponseEntity<>("Followed", HttpStatus.CREATED);
+            else return new ResponseEntity<>("Unfollowed", HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            log.error("Error in following: ", e);
+            return new ResponseEntity<>("Error in following", HttpStatus.BAD_REQUEST);
         }
     }
 }

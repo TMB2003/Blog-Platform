@@ -20,7 +20,7 @@ public class Post {
     private String userName;
     private String imageUrl;
     private String caption;
-    private int likeCount = 0;
+    private Long likeCount = 0L;
     @CreatedDate
     private LocalDateTime createdAt;
 }

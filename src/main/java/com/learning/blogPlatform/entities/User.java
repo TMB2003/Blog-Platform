@@ -24,4 +24,6 @@ public class User {
     private String password;
     @NonNull
     private Role role = Role.USER;
+    private Long follower = 0L;
+    private Long following = 0L;
 }
