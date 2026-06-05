@@ -1,16 +1,14 @@
 package com.learning.blogPlatform.entities;
 
+
 import com.learning.blogPlatform.enums.TargetType;
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "likes",
-        uniqueConstraints = @UniqueConstraint(
-                columnNames = {"targetId", "targetType", "userName"}
-        ))
+@Table(name = "comments")
 @Data
-public class Like {
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,4 +22,9 @@ public class Like {
 
     @Column(nullable = false)
     private String userName;
+
+    @Column(nullable = false)
+    private String content;
+
+    private Long likeCount = 0L;
 }

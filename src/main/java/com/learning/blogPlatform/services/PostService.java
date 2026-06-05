@@ -1,14 +1,15 @@
 package com.learning.blogPlatform.services;
 
+import com.learning.blogPlatform.entities.Comment;
 import com.learning.blogPlatform.entities.Like;
 import com.learning.blogPlatform.entities.Post;
+import com.learning.blogPlatform.enums.TargetType;
 import com.learning.blogPlatform.repositories.LikeRepository;
 import com.learning.blogPlatform.repositories.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -59,7 +60,7 @@ public class PostService {
     }
 
     public List<String> likedByUsers(String postId) {
-        return likeRepository.findUserNamesByPostId(postId);
+        return likeRepository.findUserNamesByPostId(TargetType.POST, postId);
     }
 
 //    public List<Post> likedOnPosts(String userName) {
@@ -80,17 +81,19 @@ public class PostService {
         if(post == null) {
             throw new IllegalArgumentException("Post not found");
         }
-        boolean exist = likeRepository.existsByPostIdAndUserName(postId, userName);
+        boolean exist = likeRepository.existsByTargetIdAndTargetTypeAndUserName(
+                postId, TargetType.POST,userName);
 
         if(exist){
             post.setLikeCount(post.getLikeCount() - 1);
-            likeRepository.deleteByPostIdAndUserName(postId, userName);
+            likeRepository.deleteByTargetIdAndTargetTypeAndUserName(postId, TargetType.POST, userName);
             savePost(post);
             return false;
         }
 
         Like like = new Like();
-        like.setPostId(postId);
+        like.setTargetId(postId);
+        like.setTargetType(TargetType.POST);
         like.setUserName(userName);
 
         post.setLikeCount(post.getLikeCount() + 1);
@@ -98,5 +101,4 @@ public class PostService {
         likeRepository.save(like);
         return true;
     }
-
 }
