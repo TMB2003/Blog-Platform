@@ -11,15 +11,15 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EnableMongoAuditing
-@EnableTransactionManagement
+//@EnableTransactionManagement
 public class BlogPlatformApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BlogPlatformApplication.class, args);
 	}
 
-	@Bean
-	public PlatformTransactionManager add(MongoDatabaseFactory dbFactory){
-		return new MongoTransactionManager(dbFactory);
-	}
+//	@Bean
+//	public PlatformTransactionManager add(MongoDatabaseFactory dbFactory){
+//		return new MongoTransactionManager(dbFactory);
+//	}
 }

@@ -19,6 +19,18 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @GetMapping()
+    public ResponseEntity<User> getUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+
+        User user = userService.findUser(userName);
+        if(user == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
     @PutMapping("/update")
     public ResponseEntity<User> updateUser(@RequestBody User user){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
