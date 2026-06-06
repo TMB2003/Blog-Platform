@@ -26,16 +26,16 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
+    public List<Comment> getAll(String targetId, TargetType targetType){
+        return commentRepository.findAllBytargetIdAndTargetType(targetId, targetType);
+    }
+
     public Comment saveComment(Comment comment){
         return commentRepository.save(comment);
     }
 
     public Comment findComment(String id){
         return commentRepository.findById(id).orElse(null);
-    }
-
-    public Comment getComment(String userName, String id){
-        return findComment(id);
     }
 
     public Comment updateComment(String userName, String id, Comment newComment){

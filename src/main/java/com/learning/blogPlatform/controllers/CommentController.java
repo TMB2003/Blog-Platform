@@ -2,6 +2,7 @@ package com.learning.blogPlatform.controllers;
 
 
 import com.learning.blogPlatform.entities.Comment;
+import com.learning.blogPlatform.enums.TargetType;
 import com.learning.blogPlatform.services.CommentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +37,21 @@ public class CommentController {
         }
     }
 
+    @GetMapping("/{targetType}/{targetId}")
+    public ResponseEntity<List<Comment>> getAll(@PathVariable TargetType targetType, @PathVariable String targetId){
+        try{
+            List<Comment> list = commentService.getAll(targetId, targetType);
+            return new ResponseEntity<>(list, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error in finding Comments: ", e);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping("/{commentId}")
     public ResponseEntity<Comment> getComment(@PathVariable String commentId){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName = authentication.getName();
-
         try{
-            Comment comment = commentService.getComment(userName, commentId);
+            Comment comment = commentService.findComment(commentId);
             if(comment == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             return new ResponseEntity<>(comment, HttpStatus.OK);
         } catch (Exception e) {

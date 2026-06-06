@@ -42,7 +42,7 @@ public class SpringSecurity {
 
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/public/**").permitAll()
-                        .requestMatchers( "/user/**", "/post/**").authenticated()
+                        .requestMatchers( "/user/**", "/post/**", "/comment/**").authenticated()
                         .anyRequest().permitAll())
 
                 .addFilterBefore(
