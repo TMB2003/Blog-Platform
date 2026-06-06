@@ -9,7 +9,9 @@ import com.learning.blogPlatform.repositories.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -21,8 +23,18 @@ public class PostService {
     @Autowired
     private LikeRepository likeRepository;
 
-    public Post createPost(String userName, Post post){
+    @Autowired
+    private CloudinaryService cloudinaryService;
+
+    public Post createPost(String userName, String caption, MultipartFile file) throws IOException {
+        Post post = new Post();
         post.setUserName(userName);
+        post.setCaption(caption);
+
+        if(file != null && !file.isEmpty()){
+            String imageUrl = cloudinaryService.uploadImage(file);
+            post.setImageUrl(imageUrl);
+        }
         return postRepository.save(post);
     }
 

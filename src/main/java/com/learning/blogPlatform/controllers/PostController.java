@@ -5,10 +5,12 @@ import com.learning.blogPlatform.services.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,13 +23,16 @@ public class PostController {
     private PostService postService;
 
 
-    @PostMapping("/create")
-    public ResponseEntity<Post> createPost(@RequestBody Post post){
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Post> createPost(
+            @RequestPart("file") MultipartFile file,
+            @RequestParam("caption") String caption){
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
 
         try{
-            post = postService.createPost(userName, post);
+            Post post = postService.createPost(userName, caption, file);
             return new ResponseEntity<>(post, HttpStatus.CREATED);
         } catch (Exception e) {
             log.error("Post not created: ", e);
