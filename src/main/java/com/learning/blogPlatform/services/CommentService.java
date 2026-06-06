@@ -34,11 +34,11 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    public Comment findComment(String id){
+    public Comment findComment(Long id){
         return commentRepository.findById(id).orElse(null);
     }
 
-    public Comment updateComment(String userName, String id, Comment newComment){
+    public Comment updateComment(String userName, Long id, Comment newComment){
         Comment oldComment = findComment(id);
         if(oldComment == null) return null;
 
@@ -49,7 +49,7 @@ public class CommentService {
         return saveComment(oldComment);
     }
 
-    public void deleteComment(String userName, String id){
+    public void deleteComment(String userName, Long id){
         Comment comment = findComment(id);
         if(!comment.getUserName().equals(userName)) return;
 
@@ -73,23 +73,23 @@ public class CommentService {
 //    }
 
     @Transactional
-    public boolean likeComment(String userName, String commentId){
+    public boolean likeComment(String userName, Long commentId){
         Comment comment = findComment(commentId);
         if(comment == null) {
             throw new IllegalArgumentException("Post not found");
         }
         boolean exist = likeRepository.existsByTargetIdAndTargetTypeAndUserName(
-                commentId, TargetType.COMMENT,userName);
+                commentId.toString(), TargetType.COMMENT,userName);
 
         if(exist){
             comment.setLikeCount(comment.getLikeCount() - 1);
-            likeRepository.deleteByTargetIdAndTargetTypeAndUserName(commentId, TargetType.COMMENT, userName);
+            likeRepository.deleteByTargetIdAndTargetTypeAndUserName(commentId.toString(), TargetType.COMMENT, userName);
             saveComment(comment);
             return false;
         }
 
         Like like = new Like();
-        like.setTargetId(commentId);
+        like.setTargetId(commentId.toString());
         like.setTargetType(TargetType.COMMENT);
         like.setUserName(userName);
 

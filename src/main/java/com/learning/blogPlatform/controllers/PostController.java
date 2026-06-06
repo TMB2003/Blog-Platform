@@ -42,11 +42,8 @@ public class PostController {
 
     @GetMapping("/{postId}")
     public ResponseEntity<Post> getPost(@PathVariable String postId){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName = authentication.getName();
-
         try{
-            Post post = postService.getPost(userName, postId);
+            Post post = postService.getPost(postId);
             return new ResponseEntity<>(post, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Post not found: ", e);

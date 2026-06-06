@@ -49,7 +49,7 @@ public class CommentController {
     }
 
     @GetMapping("/{commentId}")
-    public ResponseEntity<Comment> getComment(@PathVariable String commentId){
+    public ResponseEntity<Comment> getComment(@PathVariable Long commentId){
         try{
             Comment comment = commentService.findComment(commentId);
             if(comment == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -61,7 +61,7 @@ public class CommentController {
     }
 
     @PutMapping("/{commentId}")
-    public ResponseEntity<Comment> updateComment(@PathVariable String commentId, @RequestBody Comment newComment){
+    public ResponseEntity<Comment> updateComment(@PathVariable Long commentId, @RequestBody Comment newComment){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
 
@@ -75,7 +75,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable String commentId){
+    public ResponseEntity<?> deleteComment(@PathVariable Long commentId){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
 
@@ -100,7 +100,7 @@ public class CommentController {
     }
 
     @PostMapping("/{commentId}/like")
-    public ResponseEntity<String> likeComment(@PathVariable String commentId){
+    public ResponseEntity<String> likeComment(@PathVariable Long commentId){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
 

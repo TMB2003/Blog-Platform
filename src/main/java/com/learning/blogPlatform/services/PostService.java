@@ -26,6 +26,9 @@ public class PostService {
     @Autowired
     private CloudinaryService cloudinaryService;
 
+    @Autowired
+    private RedisService redisService;
+
     public Post createPost(String userName, String caption, MultipartFile file) throws IOException {
         Post post = new Post();
         post.setUserName(userName);
@@ -35,21 +38,28 @@ public class PostService {
             String imageUrl = cloudinaryService.uploadImage(file);
             post.setImageUrl(imageUrl);
         }
-        return postRepository.save(post);
+
+        Post savedPost = postRepository.save(post);
+        redisService.savePost(savedPost);
+        return savedPost;
     }
 
     public Post savePost(Post post){
-        return postRepository.save(post);
+        Post savedPost = postRepository.save(post);
+        redisService.savePost(savedPost);
+        return savedPost;
     }
 
-    public Post findPost(String id){
-        return postRepository.findById(id).orElse(null);
+    public Post findPost(String postId){
+        Post post = redisService.getPost(postId);
+        if(post != null) return post;
+        post = postRepository.findById(postId).orElse(null);
+        if(post != null) redisService.savePost(post); // ✅ null check!
+        return post;
     }
 
-    public Post getPost(String userName, String id){
-        Post post = findPost(id);
-        if(post.getUserName().equals(userName)) return post;
-        return null;
+    public Post getPost( String id){
+        return findPost(id);
     }
 
     public Post updatePost(String userName, String id, Post newPost){
@@ -64,11 +74,11 @@ public class PostService {
         return savePost(oldPost);
     }
 
-    public void deletePost(String userName, String id){
-        Post post = findPost(id);
+    public void deletePost(String userName, String postId){
+        Post post = findPost(postId);
         if(!post.getUserName().equals(userName)) return;
-
-        postRepository.deleteById(id);
+        redisService.deletePost(postId);
+        postRepository.deleteById(postId);
     }
 
     public List<String> likedByUsers(String postId) {
@@ -98,7 +108,7 @@ public class PostService {
 
         if(exist){
             post.setLikeCount(post.getLikeCount() - 1);
-            likeRepository.deleteByTargetIdAndTargetTypeAndUserName(postId, TargetType.POST, userName);
+            likeRepository.deleteByTargetIdAndTargetTypeAndUserName(postId.toString(), TargetType.POST, userName);
             savePost(post);
             return false;
         }
