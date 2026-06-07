@@ -1,6 +1,9 @@
 package com.learning.blogPlatform.config;
 
+import com.learning.blogPlatform.filters.JwtFilter;
+import com.learning.blogPlatform.filters.RateLimitFilter;
 import com.learning.blogPlatform.services.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +24,9 @@ public class SpringSecurity {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final com.learning.blogPlatform.filters.JwtFilter jwtFilter;
+
+    @Autowired
+    private RateLimitFilter rateLimitFilter;
 
     public SpringSecurity(
             UserDetailsServiceImpl userDetailsService,
@@ -48,6 +54,8 @@ public class SpringSecurity {
                 .addFilterBefore(
                         jwtFilter,
                         UsernamePasswordAuthenticationFilter.class)
+
+                .addFilterAfter(rateLimitFilter, JwtFilter.class)
 
                 .build();
     }
