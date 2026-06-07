@@ -1,11 +1,12 @@
 package com.learning.blogPlatform.services;
 
-import com.learning.blogPlatform.entities.Comment;
 import com.learning.blogPlatform.entities.Like;
 import com.learning.blogPlatform.entities.Post;
+import com.learning.blogPlatform.entities.User;
 import com.learning.blogPlatform.enums.TargetType;
 import com.learning.blogPlatform.repositories.LikeRepository;
 import com.learning.blogPlatform.repositories.PostRepository;
+import com.learning.blogPlatform.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,12 @@ public class PostService {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private EmailService emailService;
+
     public Post createPost(String userName, String caption, MultipartFile file) throws IOException {
         Post post = new Post();
         post.setUserName(userName);
@@ -41,6 +48,13 @@ public class PostService {
 
         Post savedPost = postRepository.save(post);
         redisService.savePost(savedPost);
+
+        User user = userRepository.findByUserName(post.getUserName());
+
+        String subject = "Post created Successfully";
+        String body = userName + " your post: " + post;
+        emailService.sendMail(user.getEmail(), subject, body);
+
         return savedPost;
     }
 
@@ -121,6 +135,13 @@ public class PostService {
         post.setLikeCount(post.getLikeCount() + 1);
         savePost(post);
         likeRepository.save(like);
+
+        User user = userRepository.findByUserName(post.getUserName());
+
+        String subject = userName + " liked your post";
+        String body = userName + " liked your post: " + post;
+        emailService.sendMail(user.getEmail(), subject, body);
+
         return true;
     }
 }
