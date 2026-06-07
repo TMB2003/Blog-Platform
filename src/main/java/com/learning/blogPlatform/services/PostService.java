@@ -1,6 +1,7 @@
 package com.learning.blogPlatform.services;
 
 import com.learning.blogPlatform.entities.Like;
+import com.learning.blogPlatform.entities.NotificationEvent;
 import com.learning.blogPlatform.entities.Post;
 import com.learning.blogPlatform.entities.User;
 import com.learning.blogPlatform.enums.TargetType;
@@ -36,6 +37,9 @@ public class PostService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private KafkaProducerService kafkaProducerService;
+
     public Post createPost(String userName, String caption, MultipartFile file) throws IOException {
         Post post = new Post();
         post.setUserName(userName);
@@ -51,9 +55,12 @@ public class PostService {
 
         User user = userRepository.findByUserName(post.getUserName());
 
-        String subject = "Post created Successfully";
-        String body = userName + " your post: " + post;
-        emailService.sendMail(user.getEmail(), subject, body);
+        NotificationEvent event = new NotificationEvent(
+                user.getEmail(),
+                "Post created Successfully",
+                userName + " your post: " + post.getCaption()
+        );
+        kafkaProducerService.sendPostNotification(event);
 
         return savedPost;
     }
@@ -138,9 +145,12 @@ public class PostService {
 
         User user = userRepository.findByUserName(post.getUserName());
 
-        String subject = userName + " liked your post";
-        String body = userName + " liked your post: " + post;
-        emailService.sendMail(user.getEmail(), subject, body);
+        NotificationEvent event = new NotificationEvent(
+                user.getEmail(),
+                userName + " liked your post",
+                userName + " liked your post: " + post.getCaption()
+        );
+        kafkaProducerService.sendLikeNotification(event);
 
         return true;
     }
