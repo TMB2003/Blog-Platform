@@ -37,8 +37,6 @@ public class PostService {
     @Autowired
     private EmailService emailService;
 
-    @Autowired
-    private KafkaProducerService kafkaProducerService;
 
     public String uploadImage(MultipartFile file) throws IOException {
         return cloudinaryService.uploadImage(file);
@@ -64,8 +62,8 @@ public class PostService {
                 "Post created Successfully",
                 userName + " your post: " + post.getCaption()
         );
-        kafkaProducerService.sendPostNotification(event);
-
+//        kafkaProducerService.sendPostNotification(event);
+        emailService.sendMail(event);
         return savedPost;
     }
 
@@ -157,8 +155,8 @@ public class PostService {
                 userName + " liked your post",
                 userName + " liked your post: " + post.getCaption()
         );
-        kafkaProducerService.sendLikeNotification(event);
-
+//        kafkaProducerService.sendLikeNotification(event);
+        emailService.sendMail(event);
         return true;
     }
 }

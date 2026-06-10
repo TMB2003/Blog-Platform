@@ -40,7 +40,7 @@ public class PostServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private KafkaProducerService kafkaProducerService;
+    private EmailService emailService;
 
     @Mock
     private RedisService redisService;
@@ -79,7 +79,7 @@ public class PostServiceTest {
         verify(cloudinaryService).uploadImage(file);
         verify(postRepository).save(any(Post.class));
         verify(redisService).savePost(savedPost);
-        verify(kafkaProducerService).sendPostNotification(any(NotificationEvent.class));
+        verify(emailService).sendMail(any(NotificationEvent.class));
     }
 
     @Test
@@ -112,7 +112,7 @@ public class PostServiceTest {
         verify(cloudinaryService, never()).uploadImage(any());
         verify(postRepository).save(any(Post.class));
         verify(redisService).savePost(savedPost);
-        verify(kafkaProducerService).sendPostNotification(any(NotificationEvent.class));
+        verify(emailService).sendMail(any(NotificationEvent.class));
     }
 
     @Test
@@ -340,8 +340,8 @@ public class PostServiceTest {
         assertEquals(1, post.getLikeCount());
 
         verify(likeRepository).save(any(Like.class));
-        verify(kafkaProducerService)
-                .sendLikeNotification(any(NotificationEvent.class));
+        verify(emailService)
+                .sendMail(any(NotificationEvent.class));
     }
 
     @Test
