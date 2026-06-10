@@ -51,6 +51,7 @@ public class CommentService {
 
     public void deleteComment(String userName, Long id){
         Comment comment = findComment(id);
+        if(comment == null) return;
         if(!comment.getUserName().equals(userName)) return;
 
         commentRepository.deleteById(id);

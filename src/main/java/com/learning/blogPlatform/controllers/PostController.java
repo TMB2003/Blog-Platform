@@ -51,13 +51,15 @@ public class PostController {
         }
     }
 
-    @PutMapping("/{postId}")
-    public ResponseEntity<Post> updatePost(@PathVariable String postId, @RequestBody Post newPost){
+    @PutMapping(path = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Post> updatePost(@PathVariable String postId,
+                                           @RequestPart("file") MultipartFile file,
+                                           @RequestParam("caption") String caption){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
 
         try{
-            Post post = postService.updatePost(userName, postId, newPost);
+            Post post = postService.updatePost(userName, postId, caption, file);
             return new ResponseEntity<>(post, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error in updating Post: ", e);

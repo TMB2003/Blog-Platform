@@ -26,8 +26,4 @@ public class RedisService {
     public void deletePost(String postId) {
         redisTemplate.delete("post:" + postId);
     }
-
-//    public List<Post> getAllPosts() {
-//        return redisTemplate.opsForValue().multiGet(redisTemplate.keys("post:*"));
-//    }
 }

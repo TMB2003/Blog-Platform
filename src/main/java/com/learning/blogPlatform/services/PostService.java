@@ -40,13 +40,17 @@ public class PostService {
     @Autowired
     private KafkaProducerService kafkaProducerService;
 
+    public String uploadImage(MultipartFile file) throws IOException {
+        return cloudinaryService.uploadImage(file);
+    }
+
     public Post createPost(String userName, String caption, MultipartFile file) throws IOException {
         Post post = new Post();
         post.setUserName(userName);
         post.setCaption(caption);
 
         if(file != null && !file.isEmpty()){
-            String imageUrl = cloudinaryService.uploadImage(file);
+            String imageUrl = uploadImage(file);
             post.setImageUrl(imageUrl);
         }
 
@@ -83,14 +87,17 @@ public class PostService {
         return findPost(id);
     }
 
-    public Post updatePost(String userName, String id, Post newPost){
+    public Post updatePost(String userName, String id, String newCaption, MultipartFile file) throws IOException {
         Post oldPost = findPost(id);
         if(oldPost == null) return null;
 
         if(!oldPost.getUserName().equals(userName)) return null;
 
-        if(newPost.getCaption() != null) oldPost.setCaption(newPost.getCaption());
-        if(newPost.getImageUrl() != null) oldPost.setImageUrl(newPost.getImageUrl());
+        if(newCaption != null && !newCaption.trim().isEmpty()) oldPost.setCaption(newCaption);
+        if (file != null && !file.isEmpty()) {
+            String url = uploadImage(file);
+            oldPost.setImageUrl(url);
+        }
 
         return savePost(oldPost);
     }
