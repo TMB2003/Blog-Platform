@@ -60,9 +60,9 @@ spring:
 
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+#  autoconfigure:
+#    exclude:
+#      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
 
 cloudinary:
   cloud-name: ${cloudinary_cloud_name}
