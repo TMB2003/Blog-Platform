@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class KafkaProducerService {
-    @Autowired
+    @Autowired(required = false)
     private KafkaTemplate<String, NotificationEvent> kafkaTemplate;
 
     public void sendPostNotification(NotificationEvent event){
