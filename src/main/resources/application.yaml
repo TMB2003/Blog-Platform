@@ -31,6 +31,35 @@ spring:
           auth: true
           starttls:
             enable: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+
+    properties:
+      security.protocol: SSL
+
+      ssl.keystore.type: PKCS12
+      ssl.keystore.location: ${KAFKA_KEYSTORE_LOCATION}
+      ssl.keystore.password: ${KAFKA_KEYSTORE_PASSWORD}
+
+      ssl.truststore.location: ${KAFKA_TRUSTSTORE_LOCATION}
+      ssl.truststore.password: ${KAFKA_TRUSTSTORE_PASSWORD}
+
+      spring.json.trusted.packages: "com.learning.blogPlatform.entities"
+      spring.json.use.type.headers: false
+      spring.json.value.default.type: com.learning.blogPlatform.entities.NotificationEvent
+
+    consumer:
+      group-id: blog-platform
+      auto-offset-reset: earliest
+
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+    producer:
+      retries: 3
+
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 cloudinary:
   cloud-name: ${cloudinary_cloud_name}

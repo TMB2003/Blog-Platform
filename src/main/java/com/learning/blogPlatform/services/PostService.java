@@ -35,6 +35,9 @@ public class PostService {
     private UserRepository userRepository;
 
     @Autowired
+    private KafkaProducerService kafkaProducerService;
+
+    @Autowired
     private EmailService emailService;
 
 
@@ -62,8 +65,8 @@ public class PostService {
                 "Post created Successfully",
                 userName + " your post: " + post.getCaption()
         );
-//        kafkaProducerService.sendPostNotification(event);
-        emailService.sendMail(event);
+        kafkaProducerService.sendPostNotification(event);
+//        emailService.sendMail(event);
         return savedPost;
     }
 
@@ -155,8 +158,8 @@ public class PostService {
                 userName + " liked your post",
                 userName + " liked your post: " + post.getCaption()
         );
-//        kafkaProducerService.sendLikeNotification(event);
-        emailService.sendMail(event);
+        kafkaProducerService.sendLikeNotification(event);
+//        emailService.sendMail(event);
         return true;
     }
 }
